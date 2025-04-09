@@ -15,9 +15,6 @@ import (
 // two forks. There are two forks next to each plate, so that presents no
 // difficulty. As a consequence, however, this means that no two neighbours
 // may be eating simultaneously, since there are five philosophers and five forks.
-//
-// This is a simple implementation of Dijkstra's solution to the "Dining
-// Philosophers" dilemma.
 
 // Philosopher is a struct which stores information about a philosopher.
 type Philosopher struct {
@@ -26,7 +23,7 @@ type Philosopher struct {
 	leftFork  int
 }
 
-// philosophers is list of all philosophers.
+// Philosophers is list of all philosophers.
 var philosophers = []Philosopher{
 	{name: "Plato", leftFork: 4, rightFork: 0},
 	{name: "Socrates", leftFork: 0, rightFork: 1},
@@ -35,49 +32,39 @@ var philosophers = []Philosopher{
 	{name: "Locke", leftFork: 3, rightFork: 4},
 }
 
-// Define a few variables.
 var hunger = 3                  // how many times a philosopher eats
 var eatTime = 1 * time.Second   // how long it takes to eatTime
 var thinkTime = 3 * time.Second // how long a philosopher thinks
 var sleepTime = 1 * time.Second // how long to wait when printing things out
 
-// *** added this
 var orderMutex sync.Mutex       // a mutex for the slice orderFinished; part of challenge!
 var orderFinished []string      // the order in which philosophers finish dining and leave; part of challenge!
 
 func main() {
-	// print out a welcome message
 	fmt.Println("Dining Philosophers Problem")
 	fmt.Println("---------------------------")
 	fmt.Println("The table is empty.")
 
-	// *** added this
 	time.Sleep(sleepTime)
 
 	// start the meal
 	dine()
 
-	// print out finished message
 	fmt.Println("The table is empty.")
 	
-	// *** added this
 	time.Sleep(sleepTime)
 	fmt.Printf("Order finished: %s.\n", strings.Join(orderFinished, ", "))
 
 }
 
 func dine() {
-	// eatTime = 0 * time.Second
-	// sleepTime = 0 * time.Second
-	// thinkTime = 0 * time.Second
-
 	// wg is the WaitGroup that keeps track of how many philosophers are still at the table. When
-	// it reaches zero, everyone is finished eating and has left. We add 5 (the number of philosophers) to this
-	// wait group.
+	// it reaches zero, everyone is finished eating and has left. 
+	// 5(the number of philosophers) to this wait group.
 	wg := &sync.WaitGroup{}
 	wg.Add(len(philosophers))
 
-	// We want everyone to be seated before they start eating, so create a WaitGroup for that, and set it to 5.
+	// Everyone to be seated before they start eating, so create a WaitGroup for that, and set it to 5.
 	seated := &sync.WaitGroup{}
 	seated.Add(len(philosophers))
 
@@ -151,7 +138,6 @@ func diningProblem(philosopher Philosopher, wg *sync.WaitGroup, forks map[int]*s
 	fmt.Println(philosopher.name, "is satisified.")
 	fmt.Println(philosopher.name, "left the table.")
 
-	// *** added this
 	orderMutex.Lock()
 	orderFinished = append(orderFinished, philosopher.name)
 	orderMutex.Unlock()
